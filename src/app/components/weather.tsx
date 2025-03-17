@@ -1,11 +1,10 @@
 "use client";
 import axios from "axios";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { BsMoonFill, BsSunFill } from "react-icons/bs";
 import { WiHumidity, WiStrongWind } from "react-icons/wi";
-import Image from 'next/image';
-
 
 interface WeatherData {
   location: { name: string; region: string; country: string };
@@ -105,18 +104,17 @@ const WeatherApp = () => {
     setLoading(true);
     setError("");
 
-    
-try {
-  const response = await axios.get(
-    `http://api.weatherapi.com/v1/forecast.json?key=3e1ae28170e34665a2f65526251603&q=${location}&days=7&aqi=no&alerts=no`
-  );
-  setWeather(response.data);
-} catch {
-  setError("Unable to fetch weather data. Please check the location.");
-  setWeather(null);
-} finally {
-  setLoading(false);
-}
+    try {
+      const response = await axios.get(
+        `http://api.weatherapi.com/v1/forecast.json?key=3e1ae28170e34665a2f65526251603&q=${location}&days=7&aqi=no&alerts=no`
+      );
+      setWeather(response.data);
+    } catch {
+      setError("Unable to fetch weather data. Please check the location.");
+      setWeather(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Unit conversion utilities
@@ -213,12 +211,16 @@ try {
 
             <article className="flex flex-col md:flex-row justify-between items-center">
               <div className="flex items-center gap-4">
-              <Image
-      src={weather.current.condition.icon.startsWith('//') ? `https:${weather.current.condition.icon}` : weather.current.condition.icon}
-      alt=""
-      width={80}
-      height={80}
-    />
+                <Image
+                  src={
+                    weather.current.condition.icon.startsWith("//")
+                      ? `https:${weather.current.condition.icon}`
+                      : weather.current.condition.icon
+                  }
+                  alt=""
+                  width={80}
+                  height={80}
+                />
                 <div>
                   <p className="md:text-5xl text-3xl font-bold">
                     {convertTemperature(weather.current.temp_c).toFixed(1)}°
@@ -274,7 +276,7 @@ try {
                 const condition = day.day.condition.text.toLowerCase();
                 const isDay = weather.current.is_day;
                 let bgClass = "bg-gray-100 bg-opacity-70";
-                let icon = day.day.condition.icon;
+                const icon = day.day.condition.icon;
 
                 if (
                   condition.includes("sunny") ||
@@ -333,12 +335,12 @@ try {
                       })}
                     </h4>
                     <Image
-          src={icon.startsWith('//') ? `https:${icon}` : icon}
-          alt=""
-          width={40}
-          height={40}
-          className="w-10 h-10 mx-auto my-2"
-        />
+                      src={icon.startsWith("//") ? `https:${icon}` : icon}
+                      alt=""
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 mx-auto my-2"
+                    />
                     <p className="font-medium">
                       {convertTemperature(day.day.maxtemp_c).toFixed(0)}° /{" "}
                       {convertTemperature(day.day.mintemp_c).toFixed(0)}°

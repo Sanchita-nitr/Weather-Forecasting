@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { BsMoonFill, BsSunFill } from "react-icons/bs";
 import { WiHumidity, WiStrongWind } from "react-icons/wi";
+import Image from 'next/image';
+
 
 interface WeatherData {
   location: { name: string; region: string; country: string };
@@ -34,7 +36,6 @@ const WeatherApp = () => {
   const [loading, setLoading] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isCelsius, setIsCelsius] = useState(true);
-  const [alerts, setAlerts] = useState<{ headline: string; severity: string; description: string }[]>([]);
 
   // Background themes based on weather conditions and time of day
   const getBackground = (condition: string, isDay: number) => {
@@ -104,17 +105,18 @@ const WeatherApp = () => {
     setLoading(true);
     setError("");
 
-    try {
-      const response = await axios.get(
-        `http://api.weatherapi.com/v1/forecast.json?key=3e1ae28170e34665a2f65526251603&q=${location}&days=7&aqi=no&alerts=no`
-      );
-      setWeather(response.data);
-    } catch (err) {
-      setError("Unable to fetch weather data. Please check the location.");
-      setWeather(null);
-    } finally {
-      setLoading(false);
-    }
+    
+try {
+  const response = await axios.get(
+    `http://api.weatherapi.com/v1/forecast.json?key=3e1ae28170e34665a2f65526251603&q=${location}&days=7&aqi=no&alerts=no`
+  );
+  setWeather(response.data);
+} catch {
+  setError("Unable to fetch weather data. Please check the location.");
+  setWeather(null);
+} finally {
+  setLoading(false);
+}
   };
 
   // Unit conversion utilities
@@ -211,11 +213,12 @@ const WeatherApp = () => {
 
             <article className="flex flex-col md:flex-row justify-between items-center">
               <div className="flex items-center gap-4">
-                <img
-                  src={weather.current.condition.icon}
-                  alt=""
-                  className="w-20 h-20"
-                />
+              <Image
+      src={weather.current.condition.icon.startsWith('//') ? `https:${weather.current.condition.icon}` : weather.current.condition.icon}
+      alt=""
+      width={80}
+      height={80}
+    />
                 <div>
                   <p className="md:text-5xl text-3xl font-bold">
                     {convertTemperature(weather.current.temp_c).toFixed(1)}°
@@ -329,7 +332,13 @@ const WeatherApp = () => {
                         weekday: "short",
                       })}
                     </h4>
-                    <img src={icon} alt="" className="w-10 h-10 mx-auto my-2" />
+                    <Image
+          src={icon.startsWith('//') ? `https:${icon}` : icon}
+          alt=""
+          width={40}
+          height={40}
+          className="w-10 h-10 mx-auto my-2"
+        />
                     <p className="font-medium">
                       {convertTemperature(day.day.maxtemp_c).toFixed(0)}° /{" "}
                       {convertTemperature(day.day.mintemp_c).toFixed(0)}°
